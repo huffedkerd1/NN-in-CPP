@@ -1,23 +1,25 @@
 #pragma once
 #include <vector>
 
-using namespace std;
+using Size = std::size_t;
+using Scalar = float;
 
-using FloatVec = vector<float>;
-using IntVec = vector<int>;
+using FloatVec = std::vector<Scalar>;
+using Shape = std::vector<Size>;
 
 
 class Tensor{
     private:
-        IntVec shape;
-        int total_size = 1;
-        float* data;
+        Shape shape_;
+        Size numel_ = 1;
+        Scalar* data_ = nullptr;
+        Shape stride_;
     public:
-        Tensor(FloatVec input_data, IntVec shape);
+        Tensor(const FloatVec& input_data, const Shape& shape);
         ~Tensor();
 
-        int numel();
-        void print();
+        Size numel() const;
+        void print() const;
 
         Tensor(const Tensor&) = delete;
         Tensor& operator = (const Tensor&) = delete;

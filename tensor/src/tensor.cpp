@@ -3,41 +3,60 @@
 #include <stdexcept>
 #include <iostream>
 
-using namespace std;
 
-Tensor::Tensor(FloatVec input_data, IntVec shape){
-    this->shape = shape;
-    for (int i = 0; i < shape.size(); i++){
-        total_size *= shape[i];
+Tensor::Tensor(
+    const FloatVec& input_data, 
+    const Shape& shape) 
+    :   shape_(shape), 
+        numel_(1), 
+        data_(nullptr)
+    {
+
+    for (Size i = 0; i < shape.size(); ++i){
+        numel_ *= shape[i];
     }
 
-    if (input_data.size() != total_size){
-        throw invalid_argument("Shape mismatch");
+    if (input_data.size() != numel_){
+        throw std::invalid_argument("Shape mismatch");
     }
 
-    data = new float[total_size];
-    for (int i = 0; i < total_size; i++){
-        data[i] = input_data[i];
+    data_ = new float[numel_];
+    for (Size i = 0; i < numel_; ++i){
+        data_[i] = input_data[i];
+    }
+
+    if (shape_.empty()){
+        return;
+    }
+
+    stride_.resize(shape.size());
+
+    int n = shape.size();
+
+    stride_[n-1] = 1;
+
+    for (Size i = n-1; i > 0; --i){
+        stride_[i] = stride_[i+1] * shape[i+1];
     }
 }
 
 Tensor::~Tensor(){
-    delete[] data;
+    delete[] data_;
 }
 
-int Tensor::numel(){
-    return total_size;
+Size Tensor::numel() const{
+    return numel_;
 }
 
-void Tensor::print(){
-    cout << "Tensor([";
-    for (int i = 0; i < total_size; i++){
-        if (i == total_size-1){
-            cout << data[i];
+void Tensor::print() const{
+    std::cout << "Tensor([";
+    for (int i = 0; i < numel_; i++){
+        if (i == numel_-1){
+            std::cout << data_[i];
         }
         else{
-            cout << data[i] << ",";
+            std::cout << data_[i] << ",";
         }
     }
-    cout << "])";
+    std::cout << "])";
 }
