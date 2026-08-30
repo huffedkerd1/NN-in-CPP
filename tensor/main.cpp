@@ -20,5 +20,9 @@ int main()
 
     Shape t_stride = t.stride();
     cout << t_stride << endl;
+
+    Shape index = {1, 2};
+    Scalar value = t.at(index);
+    cout << value << endl;
     return 0;
 }

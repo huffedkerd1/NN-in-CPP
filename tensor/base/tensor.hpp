@@ -42,6 +42,7 @@ class Tensor{
         void print() const;
         const Shape& shape() const;
         const Shape& stride() const;
+        Scalar at(const Shape& indicies) const;
 
         Tensor(const Tensor&) = delete;
         Tensor& operator = (const Tensor&) = delete;

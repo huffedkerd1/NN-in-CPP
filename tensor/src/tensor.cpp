@@ -3,14 +3,16 @@
 #include <stdexcept>
 #include <iostream>
 
-
-std::ostream& operator<<(std::ostream& os, const Shape& shape){
+std::ostream &operator<<(std::ostream &os, const Shape &shape)
+{
     os << "(";
 
-    for (Size i = 0; i < shape.size(); ++i){
+    for (Size i = 0; i < shape.size(); ++i)
+    {
         os << shape[i];
 
-        if (i + 1 < shape.size()){
+        if (i + 1 < shape.size())
+        {
             os << ", ";
         }
     }
@@ -97,7 +99,7 @@ Size Tensor::numel() const
 void Tensor::print() const
 {
     std::cout << "Tensor([";
-    for (int i = 0; i < numel_; i++)
+    for (Size i = 0; i < numel_; i++)
     {
         if (i == numel_ - 1)
         {
@@ -116,6 +118,26 @@ const Shape &Tensor::shape() const
     return shape_;
 }
 
-const Shape& Tensor::stride() const {
+const Shape &Tensor::stride() const
+{
     return stride_;
+}
+
+Scalar Tensor::at(const Shape &indices) const
+{
+    for (Size i = 0; i < shape_.size(); ++i)
+    {
+        if (indices[i] >= shape_[i]){
+            throw std::out_of_range("List index out of range");
+        }
+    }
+
+    Size flat_index = 0;
+    for (Size i = 0; i < stride_.size(); ++i){
+        flat_index += indices[i] * stride_[i];
+    }
+
+    Scalar target_value = data_[flat_index];
+
+    return target_value;
 }
