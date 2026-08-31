@@ -38,14 +38,15 @@ class Tensor{
         Tensor(const FloatVec& input_data, const Shape& shape);
         ~Tensor();
 
+        // Signatures.
         Size numel() const;
         void print() const;
         const Shape& shape() const;
         const Shape& stride() const;
         Scalar at(const Shape& indicies) const;
-        
+
         // Copy Constructor.
         Tensor(const Tensor& other);
 
-        Tensor& operator = (const Tensor&) = delete;
+        Tensor& operator= (const Tensor&) = delete;
 };
