@@ -113,31 +113,52 @@ void Tensor::print() const
     std::cout << "])" << std::endl;
 }
 
+// Getter: return shape
 const Shape &Tensor::shape() const
 {
     return shape_;
 }
-
+// Getter: return stride
 const Shape &Tensor::stride() const
 {
     return stride_;
 }
 
+// Getter: To access value by index
 Scalar Tensor::at(const Shape &indices) const
 {
+    if (indices.size() != shape_.size())
+    {
+        throw std::invalid_argument("Shape mismatch");
+    }
+
     for (Size i = 0; i < shape_.size(); ++i)
     {
-        if (indices[i] >= shape_[i]){
+        if (indices[i] >= shape_[i])
+        {
             throw std::out_of_range("List index out of range");
         }
     }
 
     Size flat_index = 0;
-    for (Size i = 0; i < stride_.size(); ++i){
+    for (Size i = 0; i < stride_.size(); ++i)
+    {
         flat_index += indices[i] * stride_[i];
     }
 
     Scalar target_value = data_[flat_index];
 
     return target_value;
+}
+
+Tensor::Tensor(const Tensor &other)
+    : shape_(other.shape_),
+      numel_(other.numel_),
+      stride_(other.stride_)
+{
+    data_ = new Scalar[numel_];
+
+    for (Size i = 0; i < numel_; ++i){
+        data_[i] = other.data_[i];
+    }
 }

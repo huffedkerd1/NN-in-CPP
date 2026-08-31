@@ -24,5 +24,12 @@ int main()
     Shape index = {1, 2};
     Scalar value = t.at(index);
     cout << value << endl;
+
+    Tensor t2 = t;
+    t2.print();
+
+    Shape t2_shape = t2.shape();
+    cout << t2_shape << endl;
+
     return 0;
 }
