@@ -31,5 +31,14 @@ int main()
     Shape t2_shape = t2.shape();
     cout << t2_shape << endl;
 
+    Tensor t3({1, 2, 7}, {1, 3});
+    t3 = t;
+
+    t3.print();
+    cout << t3.shape() << endl;
+
+    t = t;
+    t.print();
+
     return 0;
 }

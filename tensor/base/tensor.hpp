@@ -48,5 +48,6 @@ class Tensor{
         // Copy Constructor.
         Tensor(const Tensor& other);
 
-        Tensor& operator= (const Tensor&) = delete;
+        // Copy Assignment.
+        Tensor& operator= (const Tensor& other);
 };

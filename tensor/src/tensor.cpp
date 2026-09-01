@@ -151,6 +151,7 @@ Scalar Tensor::at(const Shape &indices) const
     return target_value;
 }
 
+// Copy Constructor.
 Tensor::Tensor(const Tensor &other)
     : shape_(other.shape_),
       numel_(other.numel_),
@@ -158,7 +159,33 @@ Tensor::Tensor(const Tensor &other)
 {
     data_ = new Scalar[numel_];
 
-    for (Size i = 0; i < numel_; ++i){
+    for (Size i = 0; i < numel_; ++i)
+    {
         data_[i] = other.data_[i];
     }
+}
+
+// Copy Assignment.
+Tensor &Tensor::operator=(const Tensor &other)
+{
+
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    delete[] data_;
+
+    this->shape_ = other.shape_;
+    this->numel_ = other.numel_;
+    this->stride_ = other.stride_;
+
+    data_ = new Scalar[numel_];
+
+    for (Size i = 0; i < numel_; ++i)
+    {
+        data_[i] = other.data_[i];
+    }
+
+    return *this;
 }
