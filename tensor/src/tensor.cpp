@@ -189,3 +189,35 @@ Tensor &Tensor::operator=(const Tensor &other)
 
     return *this;
 }
+
+// Move Constructor.
+Tensor::Tensor(Tensor &&other)
+    : shape_(other.shape_),
+      numel_(other.numel_),
+      stride_(other.stride_),
+      data_(other.data_)
+{
+    other.data_ = nullptr;
+    other.numel_ = 0;
+}
+
+// Move Assignment.
+Tensor &Tensor::operator=(Tensor &&other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+    
+    delete[] data_;
+
+    this->shape_ = other.shape_;
+    this->numel_ = other.numel_;
+    this->stride_ = other.stride_;
+    this->data_ = other.data_;
+
+    other.data_ = nullptr;
+    other.numel_ = 0;
+
+    return *this;
+}
