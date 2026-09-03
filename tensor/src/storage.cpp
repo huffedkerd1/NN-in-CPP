@@ -21,6 +21,11 @@ Storage::~Storage()
     delete[] data_;
 }
 
+const Scalar *Storage::data() const
+{
+    return data_;
+}
+
 Storage::Storage(const Storage &other)
     : numel_(other.numel_)
 {

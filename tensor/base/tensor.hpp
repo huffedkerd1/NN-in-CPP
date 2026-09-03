@@ -7,6 +7,9 @@ This framework Architecture is very easy to understand that how actually tensors
 #pragma once
 #include <vector>
 #include <iostream>
+#include <memory>
+
+#include "storage.hpp"
 
 // Making Type allises for better and professional way to code.
 using Size = std::size_t;
@@ -15,6 +18,8 @@ using Scalar = float;
 using FloatVec = std::vector<Scalar>;
 using IntVec = std::vector<int>;
 using Shape = std::vector<Size>;
+
+using Storage_ptr = std::shared_ptr<Storage>;
 
 std::ostream &operator<<(std::ostream &os, const Shape &shape);
 
@@ -28,7 +33,7 @@ class Tensor
 private:
     Shape shape_;
     Size numel_ = 1;
-    Scalar *data_ = nullptr;
+    Storage_ptr storage_;
     Shape stride_;
 
     /*

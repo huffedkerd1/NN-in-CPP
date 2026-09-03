@@ -17,6 +17,8 @@ public:
     Storage(const FloatVec &input_data);
     ~Storage();
 
+    const Scalar *data() const;
+
     Storage(const Storage &other);
     Storage &operator=(const Storage &other);
 

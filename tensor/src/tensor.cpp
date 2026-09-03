@@ -41,7 +41,7 @@ Tensor::Tensor(
     const Shape &shape)
     : shape_(shape),
       numel_(1),
-      data_(nullptr)
+      storage_(std::make_shared<Storage>(input_data))
 {
     // A. Calculating Total size (Numel).
     for (Size i = 0; i < shape_.size(); ++i)
@@ -55,12 +55,6 @@ Tensor::Tensor(
         throw std::invalid_argument("Shape mismatch");
     }
 
-    // C. Reserve memory for data, and store data in memory.
-    data_ = new Scalar[numel_];
-    for (Size i = 0; i < numel_; ++i)
-    {
-        data_[i] = input_data[i];
-    }
 
     // D. No stride is required for empty shape.
     if (shape_.empty())
@@ -88,7 +82,7 @@ Tensor::Tensor(
 // Destructor: Free memory that we use for data when we close our object.
 Tensor::~Tensor()
 {
-    delete[] data_;
+
 }
 // Numel: Getter for Total Size.
 Size Tensor::numel() const
@@ -103,11 +97,11 @@ void Tensor::print() const
     {
         if (i == numel_ - 1)
         {
-            std::cout << data_[i];
+            std::cout << storage_->data()[i];
         }
         else
         {
-            std::cout << data_[i] << ",";
+            std::cout << storage_->data()[i] << ",";
         }
     }
     std::cout << "])" << std::endl;
@@ -146,7 +140,7 @@ Scalar Tensor::at(const Shape &indices) const
         flat_index += indices[i] * stride_[i];
     }
 
-    Scalar target_value = data_[flat_index];
+    Scalar target_value = storage_->data()[flat_index];
 
     return target_value;
 }
@@ -155,14 +149,10 @@ Scalar Tensor::at(const Shape &indices) const
 Tensor::Tensor(const Tensor &other)
     : shape_(other.shape_),
       numel_(other.numel_),
-      stride_(other.stride_)
+      stride_(other.stride_),
+      storage_(other.storage_)
 {
-    data_ = new Scalar[numel_];
 
-    for (Size i = 0; i < numel_; ++i)
-    {
-        data_[i] = other.data_[i];
-    }
 }
 
 // Copy Assignment.
@@ -174,18 +164,10 @@ Tensor &Tensor::operator=(const Tensor &other)
         return *this;
     }
 
-    delete[] data_;
-
     this->shape_ = other.shape_;
     this->numel_ = other.numel_;
     this->stride_ = other.stride_;
-
-    data_ = new Scalar[numel_];
-
-    for (Size i = 0; i < numel_; ++i)
-    {
-        data_[i] = other.data_[i];
-    }
+    this->storage_ = other.storage_;
 
     return *this;
 }
@@ -195,9 +177,8 @@ Tensor::Tensor(Tensor &&other)
     : shape_(other.shape_),
       numel_(other.numel_),
       stride_(other.stride_),
-      data_(other.data_)
+      storage_(std::move(other.storage_))
 {
-    other.data_ = nullptr;
     other.numel_ = 0;
 }
 
@@ -208,15 +189,13 @@ Tensor &Tensor::operator=(Tensor &&other)
     {
         return *this;
     }
-    
-    delete[] data_;
+
 
     this->shape_ = other.shape_;
     this->numel_ = other.numel_;
     this->stride_ = other.stride_;
-    this->data_ = other.data_;
+    this->storage_ = std::move(other.storage_);
 
-    other.data_ = nullptr;
     other.numel_ = 0;
 
     return *this;
