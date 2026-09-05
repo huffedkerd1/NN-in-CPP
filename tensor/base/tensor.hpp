@@ -14,6 +14,7 @@ This framework Architecture is very easy to understand that how actually tensors
 // Making Type allises for better and professional way to code.
 using Size = std::size_t;
 using Scalar = float;
+using Bool = bool;
 
 using FloatVec = std::vector<Scalar>;
 using IntVec = std::vector<int>;
@@ -35,6 +36,9 @@ private:
     Size numel_ = 1;
     Storage_ptr storage_;
     Shape stride_;
+    Size offset_ = 0;
+    Bool is_view_ = false;
+    Bool contiguous_ = true;
 
     /*
     Public Access Specifiers:
@@ -49,6 +53,7 @@ public:
     const Shape &shape() const;
     const Shape &stride() const;
     Scalar at(const Shape &indicies) const;
+    Bool is_contiguous() const;
 
     // Copy Constructor.
     Tensor(const Tensor &other);

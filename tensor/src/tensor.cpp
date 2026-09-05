@@ -41,7 +41,10 @@ Tensor::Tensor(
     const Shape &shape)
     : shape_(shape),
       numel_(1),
-      storage_(std::make_shared<Storage>(input_data))
+      storage_(std::make_shared<Storage>(input_data)),
+      offset_(0),
+      is_view_(false),
+      contiguous_(true)
 {
     // A. Calculating Total size (Numel).
     for (Size i = 0; i < shape_.size(); ++i)
@@ -139,10 +142,30 @@ Scalar Tensor::at(const Shape &indices) const
     {
         flat_index += indices[i] * stride_[i];
     }
-
+    
+    flat_index += offset_;
     Scalar target_value = storage_->data()[flat_index];
 
     return target_value;
+}
+
+Bool Tensor::is_contiguous() const
+{
+    Shape current_stride = stride_;
+    Size n = shape_.size();
+    Shape new_stride;
+    new_stride.resize(shape_.size());
+
+    new_stride[n - 1]  = 1;
+    for(Size i = n - 1; i > 0; --i){
+        new_stride[i - 1] = new_stride[i] * shape_[i];
+    }
+
+    if(current_stride == new_stride){
+        return true;
+    }
+
+    return false;
 }
 
 // Copy Constructor.
@@ -150,7 +173,10 @@ Tensor::Tensor(const Tensor &other)
     : shape_(other.shape_),
       numel_(other.numel_),
       stride_(other.stride_),
-      storage_(other.storage_)
+      storage_(other.storage_),
+      offset_(other.offset_),
+      is_view_(other.is_view_),
+      contiguous_(other.contiguous_)
 {
 
 }
@@ -168,6 +194,9 @@ Tensor &Tensor::operator=(const Tensor &other)
     this->numel_ = other.numel_;
     this->stride_ = other.stride_;
     this->storage_ = other.storage_;
+    this->offset_ = other.offset_;
+    this->is_view_ = other.is_view_;
+    this->contiguous_ = other.contiguous_;
 
     return *this;
 }
@@ -177,7 +206,10 @@ Tensor::Tensor(Tensor &&other)
     : shape_(other.shape_),
       numel_(other.numel_),
       stride_(other.stride_),
-      storage_(std::move(other.storage_))
+      storage_(std::move(other.storage_)),
+      offset_(other.offset_),
+      is_view_(other.is_view_),
+      contiguous_(other.contiguous_)
 {
     other.numel_ = 0;
 }
@@ -195,6 +227,9 @@ Tensor &Tensor::operator=(Tensor &&other)
     this->numel_ = other.numel_;
     this->stride_ = other.stride_;
     this->storage_ = std::move(other.storage_);
+    this->offset_ = other.offset_;
+    this->is_view_ = other.is_view_;
+    this->contiguous_ = other.contiguous_;
 
     other.numel_ = 0;
 
