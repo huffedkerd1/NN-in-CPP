@@ -3,19 +3,16 @@
 
 using namespace std;
 int main() {
-    Tensor t1({1, 2, 3, 4, 5, 6}, {2, 3});
-    t1.print();
-    cout << t1.numel() << endl;
+    FloatVec data = {1, 2, 3, 4, 5, 6};
+    Shape shape = {6};
 
-    Tensor t2 = t1;
+    Tensor t1(data, shape);
+
+    Tensor t2 = t1.slice(3, 6);
     t2.print();
-    cout << t2.numel() << endl;
 
-    Tensor t3 = move(t1);
+    Tensor t3 = t2.slice(1, 3);
     t3.print();
-    cout << t3.numel() << endl;
-
-    cout << t1.numel() << endl;
 
     return 0;
 }

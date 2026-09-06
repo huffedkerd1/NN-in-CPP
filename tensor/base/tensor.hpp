@@ -45,6 +45,7 @@ private:
     */
 public:
     Tensor(const FloatVec &input_data, const Shape &shape);
+    Tensor(Storage_ptr storage, Shape shape, Size offset);
     ~Tensor();
 
     // Signatures.
@@ -54,6 +55,8 @@ public:
     const Shape &stride() const;
     Scalar at(const Shape &indicies) const;
     Bool is_contiguous() const;
+
+    Tensor slice(Size start, Size end) const;
 
     // Copy Constructor.
     Tensor(const Tensor &other);

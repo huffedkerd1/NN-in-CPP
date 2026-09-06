@@ -58,7 +58,6 @@ Tensor::Tensor(
         throw std::invalid_argument("Shape mismatch");
     }
 
-
     // D. No stride is required for empty shape.
     if (shape_.empty())
     {
@@ -82,10 +81,32 @@ Tensor::Tensor(
         stride_[i - 1] = stride_[i] * shape_[i];
     }
 }
+
+Tensor::Tensor(Storage_ptr storage, Shape shape, Size offset)
+    :   shape_(shape),
+        numel_(1),
+        storage_(storage),
+        offset_(offset),
+        is_view_(true)
+{
+    for (Size i = 0; i < shape_.size(); i++)
+    {
+        numel_ *= shape[i];
+    }
+
+    stride_.resize(shape_.size());
+    Size n = shape_.size();
+
+    stride_[n - 1] = 1;
+    for (Size i = n - 1; i > 0; --i)
+    {
+        stride_[i - 1] = stride_[i] * shape_[i];
+    }
+}
+
 // Destructor: Free memory that we use for data when we close our object.
 Tensor::~Tensor()
 {
-
 }
 // Numel: Getter for Total Size.
 Size Tensor::numel() const
@@ -100,11 +121,11 @@ void Tensor::print() const
     {
         if (i == numel_ - 1)
         {
-            std::cout << storage_->data()[i];
+            std::cout << storage_->data()[i + offset_];
         }
         else
         {
-            std::cout << storage_->data()[i] << ",";
+            std::cout << storage_->data()[i + offset_] << ",";
         }
     }
     std::cout << "])" << std::endl;
@@ -142,7 +163,7 @@ Scalar Tensor::at(const Shape &indices) const
     {
         flat_index += indices[i] * stride_[i];
     }
-    
+
     flat_index += offset_;
     Scalar target_value = storage_->data()[flat_index];
 
@@ -156,16 +177,30 @@ Bool Tensor::is_contiguous() const
     Shape new_stride;
     new_stride.resize(shape_.size());
 
-    new_stride[n - 1]  = 1;
-    for(Size i = n - 1; i > 0; --i){
+    new_stride[n - 1] = 1;
+    for (Size i = n - 1; i > 0; --i)
+    {
         new_stride[i - 1] = new_stride[i] * shape_[i];
     }
 
-    if(current_stride == new_stride){
+    if (current_stride == new_stride)
+    {
         return true;
     }
 
     return false;
+}
+
+Tensor Tensor::slice(Size start, Size end) const
+{
+    if (start > end || end > numel_){
+        throw std::out_of_range("Slice bounds out of range");
+    }
+
+    Shape new_shape = {end - start};
+    Size new_offset = offset_ + start;
+
+    return Tensor(storage_, new_shape, new_offset);
 }
 
 // Copy Constructor.
@@ -178,7 +213,6 @@ Tensor::Tensor(const Tensor &other)
       is_view_(other.is_view_),
       contiguous_(other.contiguous_)
 {
-
 }
 
 // Copy Assignment.
@@ -221,7 +255,6 @@ Tensor &Tensor::operator=(Tensor &&other)
     {
         return *this;
     }
-
 
     this->shape_ = other.shape_;
     this->numel_ = other.numel_;
