@@ -83,11 +83,11 @@ Tensor::Tensor(
 }
 
 Tensor::Tensor(Storage_ptr storage, Shape shape, Size offset)
-    :   shape_(shape),
-        numel_(1),
-        storage_(storage),
-        offset_(offset),
-        is_view_(true)
+    : shape_(shape),
+      numel_(1),
+      storage_(storage),
+      offset_(offset),
+      is_view_(true)
 {
     for (Size i = 0; i < shape_.size(); i++)
     {
@@ -116,19 +116,52 @@ Size Tensor::numel() const
 // Print: Display tensor data in readable form.
 void Tensor::print() const
 {
-    std::cout << "Tensor([";
-    for (Size i = 0; i < numel_; i++)
+    print_recursive(0, {});
+    std::cout << std::endl;
+}
+
+void Tensor::print_recursive(Size dim, Shape indices) const
+{
+    if (dim == shape_.size() - 1)
     {
-        if (i == numel_ - 1)
+        std::cout << "[";
+
+        for (Size i = 0; i < shape_[dim]; ++i)
         {
-            std::cout << storage_->data()[i + offset_];
+            Shape new_indices = indices;
+            new_indices.push_back(i);
+
+            if (i == shape_[dim] - 1)
+            {
+                std::cout << at(new_indices);
+            }
+            else
+            {
+                std::cout << at(new_indices) << ",";
+            }
         }
-        else
-        {
-            std::cout << storage_->data()[i + offset_] << ",";
-        }
+        std::cout << "]";
     }
-    std::cout << "])" << std::endl;
+
+    else
+    {
+        std::cout << "[";
+
+        for (Size i = 0; i < shape_[dim]; ++i)
+        {
+            Shape new_indices = indices;
+            new_indices.push_back(i);
+
+            print_recursive(dim + 1, new_indices);
+
+            if (i != shape_[dim] - 1)
+            {
+                std::cout << ",";
+            }
+        }
+
+        std::cout << "]";
+    }
 }
 
 // Getter: return shape
@@ -193,7 +226,8 @@ Bool Tensor::is_contiguous() const
 
 Tensor Tensor::slice(Size start, Size end) const
 {
-    if (start > end || end > numel_){
+    if (start > end || end > numel_)
+    {
         throw std::out_of_range("Slice bounds out of range");
     }
 

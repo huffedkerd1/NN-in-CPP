@@ -40,6 +40,8 @@ private:
     Bool is_view_ = false;
     Bool contiguous_ = true;
 
+    void print_recursive(Size dim, Shape indices) const;
+
     /*
     Public Access Specifiers:
     */
