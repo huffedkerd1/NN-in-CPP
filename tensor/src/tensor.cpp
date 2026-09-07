@@ -82,25 +82,18 @@ Tensor::Tensor(
     }
 }
 
-Tensor::Tensor(Storage_ptr storage, Shape shape, Size offset)
+Tensor::Tensor(Storage_ptr storage, Shape shape, Size offset, Shape stride)
     : shape_(shape),
       numel_(1),
       storage_(storage),
       offset_(offset),
-      is_view_(true)
+      stride_(stride),
+      is_view_(true),
+      contiguous_(false)
 {
-    for (Size i = 0; i < shape_.size(); i++)
+    for (Size i = 0; i < shape_.size(); ++i)
     {
         numel_ *= shape[i];
-    }
-
-    stride_.resize(shape_.size());
-    Size n = shape_.size();
-
-    stride_[n - 1] = 1;
-    for (Size i = n - 1; i > 0; --i)
-    {
-        stride_[i - 1] = stride_[i] * shape_[i];
     }
 }
 
@@ -224,17 +217,36 @@ Bool Tensor::is_contiguous() const
     return false;
 }
 
-Tensor Tensor::slice(Size start, Size end) const
+Tensor Tensor::slice(Shape start, Shape end) const
 {
-    if (start > end || end > numel_)
-    {
-        throw std::out_of_range("Slice bounds out of range");
+
+    if (start.size() != shape_.size() || end.size() != shape_.size()){
+        throw std::invalid_argument("Slice Dimensions Mismatch");
     }
 
-    Shape new_shape = {end - start};
-    Size new_offset = offset_ + start;
+    for (Size i = 0; i < shape_.size(); ++i)
+    {
+        if (start[i] > end[i] || end[i] > shape_[i])
+        {
+            throw std::out_of_range("Slice bounds out of range");
+        }
+    }
 
-    return Tensor(storage_, new_shape, new_offset);
+    Shape new_shape;
+    Size new_offset = offset_;
+    Shape new_stride;
+
+    new_shape.resize(shape_.size());
+
+    for (Size i = 0; i < shape_.size(); ++i)
+    {
+        new_shape[i] = end[i] - start[i];
+        new_offset += start[i] * stride_[i];
+    }
+
+    new_stride = stride_;
+
+    return Tensor(storage_, new_shape, new_offset, new_stride);
 }
 
 // Copy Constructor.

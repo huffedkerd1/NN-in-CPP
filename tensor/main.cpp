@@ -2,18 +2,12 @@
 #include "base/tensor.hpp"
 
 using namespace std;
-int main() {
-    FloatVec data = {1, 2, 3, 4, 5, 6};
-    Shape shape = {2, 3};
+int main()
+{
+    Tensor t1({1,2,3,4,5, 6,7,8,9,10, 11,12,13,14,15, 16,17,18,19,20}, {4,5});
+    Tensor sliced = t1.slice({1, 1}, {3, 4});
 
-    Tensor t1(data, shape);
-    t1.print();
-
-    // Tensor t2 = t1.slice(3, 6);y
-    // t2.print();
-
-    // Tensor t3 = t2.slice(1, 3);
-    // t3.print();
+    sliced.print();
 
     return 0;
 }
