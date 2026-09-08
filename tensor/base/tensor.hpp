@@ -8,6 +8,7 @@ This framework Architecture is very easy to understand that how actually tensors
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <limits>
 
 #include "storage.hpp"
 
@@ -21,6 +22,8 @@ using IntVec = std::vector<int>;
 using Shape = std::vector<Size>;
 
 using Storage_ptr = std::shared_ptr<Storage>;
+
+constexpr Scalar INF = std::numeric_limits<Scalar>::infinity();
 
 std::ostream &operator<<(std::ostream &os, const Shape &shape);
 
@@ -71,4 +74,10 @@ public:
 
     // Move Assignment.
     Tensor &operator=(Tensor &&other);
+
+    // Arithmetic Operators
+    Tensor operator+(const Tensor &other) const;
+    Tensor operator-(const Tensor &other) const;
+    Tensor operator*(const Tensor &other) const;
+    Tensor operator/(const Tensor &other) const;
 };
