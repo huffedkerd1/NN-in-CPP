@@ -1,6 +1,3 @@
-#include <iostream>
-#include <stdexcept>
-
 #include "../../base/tensor.hpp"
 
 Tensor Tensor::operator+(const Tensor &other) const

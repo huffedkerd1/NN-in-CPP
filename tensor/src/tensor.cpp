@@ -1,7 +1,6 @@
 #include "../base/tensor.hpp"
 
-#include <stdexcept>
-#include <iostream>
+
 
 std::ostream &operator<<(std::ostream &os, const Shape &shape)
 {

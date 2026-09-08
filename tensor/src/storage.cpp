@@ -1,7 +1,5 @@
 #include "../base/storage.hpp"
 
-#include <vector>
-
 Storage::Storage(
     const FloatVec &input_data)
     : data_(nullptr),

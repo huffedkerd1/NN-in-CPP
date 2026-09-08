@@ -9,6 +9,7 @@ This framework Architecture is very easy to understand that how actually tensors
 #include <iostream>
 #include <memory>
 #include <limits>
+#include <stdexcept>
 
 #include "storage.hpp"
 
