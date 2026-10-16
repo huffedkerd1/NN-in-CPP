@@ -262,7 +262,7 @@ Tensor Tensor::expand(const Shape &target) const
             new_shape[i] = target[i];
             new_stride[i] = stride_[i];
         }
-        else if (shape_[j] == 1 || j < 0:){
+        else if (shape_[j] == 1 || j < 0){
             new_shape[i] = target[i];
             new_stride[i] = 0;
         }
