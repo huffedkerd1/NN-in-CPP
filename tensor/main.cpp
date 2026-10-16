@@ -6,14 +6,8 @@
 using namespace std;
 int main()
 {
-    Shape a = {1, 2, 3};
-    Shape b = {4,};
-
-    Shape result = broadcasting::broadcast_shape(a, b);
-
-    for (int dim : result){
-        cout << dim << " ";
-    }
+    Tensor A({1, 2, 3}, {3});
+    A.expand({2, 3});
 
     return 0;
 }

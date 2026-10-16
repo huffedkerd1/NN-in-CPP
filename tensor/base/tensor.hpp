@@ -63,6 +63,7 @@ public:
     Bool is_contiguous() const;
 
     Tensor slice(Shape start, Shape end) const;
+    Tensor expand(const Shape& target) const;
 
     // Copy Constructor.
     Tensor(const Tensor &other);
