@@ -249,21 +249,29 @@ Tensor Tensor::slice(Shape start, Shape end) const
 
 Tensor Tensor::expand(const Shape &target) const
 {
-    if (target.size() < shape_.size()){
+    if (target.size() < shape_.size()) {
         throw std::invalid_argument("Shape size mismatched!");
     }
 
-    int difference = target.size() - shape_.size();
-    Shape new_shape, new_stride;
-    new_shape.resize(target.size()), new_stride.resize(target.size());
+    Shape new_shape(target.size());
+    Shape new_stride(target.size());
 
-    for (int i = new_shape.size()-1, j = shape_.size()-1; i >= 0 || j >= 0; --i, --j){
-        if (target[i] == shape_[j]){
-            new_shape[i] = target[i];
-            new_stride[i] = stride_[i];
+    int difference = target.size() - shape_.size();
+
+    for (int i = static_cast<int>(target.size()) - 1; i >= 0; --i) {
+        int j = i - difference;
+
+        new_shape[i] = target[i];
+
+        if (j < 0) {
+            new_stride[i] = 0;
         }
-        else if (shape_[j] == 1 || j < 0){
-            new_shape[i] = target[i];
+
+        else if (shape_[j] == target[i]) {
+            new_stride[i] = stride_[j];
+        }
+
+        else if (shape_[j] == 1) {
             new_stride[i] = 0;
         }
         else {
@@ -271,8 +279,6 @@ Tensor Tensor::expand(const Shape &target) const
         }
     }
 
-    std::cout << new_shape << std::endl;
-    std::cout << new_stride << std::endl;
     return Tensor(storage_, new_shape, offset_, new_stride);
 }
 

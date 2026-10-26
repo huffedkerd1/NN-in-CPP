@@ -8,6 +8,7 @@ int main()
 {
     Tensor A({1, 2, 3}, {3});
     A.expand({2, 3});
+    A.shape();
 
     return 0;
 }

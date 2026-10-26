@@ -4,6 +4,12 @@ In this file you can clearly see that how to maintain and develop professional c
 This framework Architecture is very easy to understand that how actually tensors are work.
 */
 
+/*
+This file hold all the basic to advance operations + data + metadata of tensor.
+This file is like a control centre of Tensor.All the Tensors are made through this file.
+This file can communicate with other files like storage, broadcasting, etc.
+*/
+
 #pragma once
 #include <vector>
 #include <iostream>
